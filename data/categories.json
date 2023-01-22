@@ -1,0 +1,24 @@
+{
+  "categories": [
+    {
+      "id": "category001",
+      "name": "Beef"
+    },
+    {
+      "id": "category002",
+      "name": "Chicken"
+    },
+    {
+      "id": "category003",
+      "name": "Fish"
+    },
+    {
+      "id": "category004",
+      "name": "Salads & Vegetables"
+    },
+    {
+      "id": "category005",
+      "name": "Hbeef"
+    }
+  ]
+}

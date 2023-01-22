@@ -1,0 +1,4 @@
+<Route path="*" element={<Navigate to="/" /> } />
+//! to make other path inaccessible
+
+<Route path=

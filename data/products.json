@@ -1,0 +1,31 @@
+{
+  "products": [
+    {
+      "id": "item001",
+      "name": "Angus Beef Belly",
+      "description": "slow roasted, fork tender, demiglace gravy",
+      "categpry": "category001",
+      "img": "./menu/food/belly.jpg"
+    },
+    {
+      "id": "item002",
+      "name": "Beef Flakes",
+      "description": "Angus Beef crunchy flakes",
+      "categpry": "category001",
+      "img": "./menu/food/bFlakes.jpg"
+    },
+    {
+      "id": "item003",
+      "name": "Tofu Steak with Sweet Shitake",
+      "description": "battered soft tofu, sweet mushroom sauce",
+      "categpry": "category004",
+      "img": "./menu/food/belly.jpg"
+    },
+    {
+      "id": "item004",
+      "name": "Chicken Casserole",
+      "categpry": "category002",
+      "img": "./menu/food/cCasserole.jpg"
+    }
+  ]
+}

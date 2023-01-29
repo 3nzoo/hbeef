@@ -8,7 +8,7 @@ import { SiHappycow } from 'react-icons/si';
 import { IconType } from 'react-icons';
 import { AiFillCalendar } from 'react-icons/ai';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { toggle } from '../../redux/sidebarSlice';
+import { toggleSideBar } from '../../redux/popUpSlice';
 
 interface iMenu {
   name: string;
@@ -24,7 +24,8 @@ function SideBar() {
     { name: 'Reservation', link: '/admin/reservation', icon: AiFillCalendar },
     { name: 'Settings', link: '/admin/settings', icon: RiSettings4Line },
   ];
-  const open = useAppSelector((state) => state.sidebar.isOpen);
+
+  const open = useAppSelector((state) => state.toggling.sideBarIsOpen);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,7 +33,7 @@ function SideBar() {
   // const [open, setOpen] = useState(true && window.innerWidth > 640);
 
   const handleToggle = () => {
-    dispatch(toggle());
+    dispatch(toggleSideBar());
   };
 
   const handleLogout: React.MouseEventHandler<HTMLDivElement> = () => {
@@ -44,7 +45,7 @@ function SideBar() {
     <>
       <div
         className={`bg-blue-550 min-h-screen ${
-          open ? 'w-44' : 'w-20'
+          open ? 'w-52' : 'w-20'
         } duration-500 text-gray-100 px-4`}
       >
         <div className='py-3 flex justify-end'>

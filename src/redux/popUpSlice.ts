@@ -7,6 +7,7 @@ type popUpState = {
   reserveIsOpen: boolean;
   settingsIsOpen: boolean;
   sideBarIsOpen: boolean;
+  uploadIsOpen: boolean;
 };
 
 const initialState: popUpState = {
@@ -16,6 +17,7 @@ const initialState: popUpState = {
   userIsOpen: false,
   settingsIsOpen: false,
   reserveIsOpen: false,
+  uploadIsOpen: false,
 };
 
 export const popUpSlice = createSlice({
@@ -37,11 +39,15 @@ export const popUpSlice = createSlice({
     toggleSideBar: (state) => {
       state.sideBarIsOpen = !state.sideBarIsOpen;
     },
+    toggleUpload: (state) => {
+      state.uploadIsOpen = !state.uploadIsOpen;
+    },
   },
 });
 
 export default popUpSlice.reducer;
 export const {
+  toggleUpload,
   toggleProd,
   toggleCategory,
   toggleSettings,

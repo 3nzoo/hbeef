@@ -91,12 +91,25 @@ const Products = () => {
           <div className='mt-4 pb-2 overflow-auto'>
             <ul className='mt-3 flex flex-col gap-3'>
               <li className='flex flex-row grow w-auto justify-between items-center overflow-auto h-20 gap-4'>
-                {/*//! Image / Name / Price / category */}
-                <img src={imageURL} alt='itemname' width='100' height='100' />
-                <div className='min-w-[20%]'>Name here</div>{' '}
-                <div className='min-w-[20%]'>Price</div>{' '}
+                <div className='min-w-[20%]'>Image</div>
+                <div className='min-w-[25%]'>Name here</div>
+                <div className='min-w-[10%]'>Price</div>
                 <div className='min-w-[20%]'>category</div>
-                <div className='flex flex-row gap-4 min-w-[20%'>
+                <div className='flex flex-row gap-4 min-w-[20%]'>Actions</div>
+              </li>
+              <li className='flex flex-row grow w-auto justify-between items-center overflow-auto h-20 gap-4 text-center'>
+                {/*//! Image / Name / Price / category */}
+                <img
+                  src={imageURL}
+                  alt='itemname'
+                  width='100'
+                  height='100'
+                  className='min-w-[20%]'
+                />
+                <div className='min-w-[25%]'>Name here</div>{' '}
+                <div className='min-w-[10%]'>Price</div>{' '}
+                <div className='min-w-[20%]'>category</div>
+                <div className='flex flex-row gap-4 min-w-[20%]'>
                   <button className='bg-yellow-500 p-1 px-2 rounded-lg'>
                     edit
                   </button>

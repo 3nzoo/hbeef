@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { useAppDispatch } from '../../../redux/hooks';
-import { toggleProd } from '../../../redux/popUpSlice';
+import { toggleEditProd, toggleProd } from '../../../redux/popUpSlice';
 import ErrorComponent from '../../../components/common/Error';
 import {
   updateCredentials,
@@ -19,24 +19,29 @@ import SuccessComponent from '../../../components/common/Success';
 //TODO - update redux storage for products list
 
 interface iFormData {
+  id: string;
   name: string;
   description: string;
   price: string;
   img_Url: string;
   category_id: string;
+  createdAt: string;
 }
 
-interface addProdProps {
+interface editProdProps {
+  currentData: any;
   reloadMenu: (arg: iProduct, taskDone: string) => void;
 }
 
-const AddProduct = ({ reloadMenu }: addProdProps) => {
+const EditProduct = ({ currentData, reloadMenu }: editProdProps) => {
   const [formData, setFormData] = useState<iFormData>({
-    name: '',
-    description: '',
-    price: '',
-    img_Url: '',
-    category_id: '',
+    id: currentData.id,
+    name: currentData.name,
+    description: currentData.description,
+    price: currentData.price,
+    img_Url: currentData.img_Url,
+    category_id: currentData.category_id,
+    createdAt: currentData.createdAt,
   });
 
   const [newError, setNewError] = useState(false);
@@ -44,54 +49,59 @@ const AddProduct = ({ reloadMenu }: addProdProps) => {
   const [image, setImage] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [newSuccess, setNewSuccess] = useState('');
-  const fileRef = useRef<HTMLInputElement>(null!);
-  const selectRef = useRef<HTMLSelectElement>(null!);
-
+  const dispatch = useAppDispatch();
+  const { data } = useDynamoCategories(import.meta.env.VITE_AWS_CATEGORY_TABLE);
   const [initiate, setInitiate] = useState(false);
 
   useEffect(() => {
     const addClass = setTimeout(() => {
       setInitiate(true);
-    }, 10);
+    }, 100);
 
     return () => {
       clearTimeout(addClass);
     };
   }, [initiate]);
 
-  const createNewProduct = async (data: iFormData) => {
+  const editProduct = async (data: iFormData) => {
     updateCredentials();
-
-    const newData = {
-      ...data,
-      id: uuidv4(),
-      createdAt: new Date().toISOString(),
-    };
     try {
-      const params = {
-        TableName: import.meta.env.VITE_AWS_MENU_TABLE,
-        Item: newData,
-      };
-
-      const dynamodb = new AWS.DynamoDB.DocumentClient();
-      await dynamodb.put(params).promise();
+      const dynamodb = new AWS.DynamoDB.DocumentClient({
+        region: import.meta.env.VITE_AWS_REGION,
+      });
+      // await dynamodb.update(params).promise();
+      await dynamodb
+        .update({
+          TableName: import.meta.env.VITE_AWS_MENU_TABLE,
+          Key: { id: data.id, createdAt: data.createdAt },
+          UpdateExpression:
+            'SET #name = :name, #description = :description, #price = :price, #img_Url = :img_Url, #category_id = :category_id',
+          ExpressionAttributeNames: {
+            '#name': 'name',
+            '#description': 'description',
+            '#price': 'price',
+            '#img_Url': 'img_Url',
+            '#category_id': 'category_id',
+          },
+          ExpressionAttributeValues: {
+            ':name': data.name,
+            ':description': data.description,
+            ':price': data.price,
+            ':img_Url': data.img_Url,
+            ':category_id': data.category_id,
+          },
+        })
+        .promise();
+      reloadMenu(data, 'editProduct');
 
       if (image) {
-        setUploading(true);
         const keyName = `menu/${image.name}`;
+        setUploading(true);
         fileParams.Key = keyName;
         fileParams.Body = image;
         try {
-          await s3.upload(fileParams, (err: Error, data: any) => {
-            if (err) {
-              console.log(err);
-            } else {
-              fileRef.current.value = '';
-              selectRef.current.value = '0';
-              setUploading(false);
-              reloadMenu(newData, 'addProduct');
-            }
-          });
+          await s3.upload(fileParams).promise();
+          setUploading(false);
         } catch (error) {
           console.log(error);
         }
@@ -101,14 +111,8 @@ const AddProduct = ({ reloadMenu }: addProdProps) => {
     }
   };
 
-  const { data } = useDynamoCategories(import.meta.env.VITE_AWS_CATEGORY_TABLE);
-
-  const dispatch = useAppDispatch();
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    // console.log('form-', formData);
 
     try {
       if (Object.values(formData).some((value) => !value)) {
@@ -116,15 +120,17 @@ const AddProduct = ({ reloadMenu }: addProdProps) => {
         setNewSuccess('');
         return setNewError(true);
       } else {
-        createNewProduct(formData);
+        editProduct(formData);
         setNewError(false);
-        setNewSuccess(`You have Successfully added ${formData.name}`);
+        setNewSuccess(`You have Successfully edited ${formData.name}`);
         setFormData({
+          id: '',
           name: '',
           description: '',
           price: '',
           img_Url: '',
           category_id: '',
+          createdAt: '',
         });
 
         //! dispatch prod details in redux
@@ -150,14 +156,14 @@ const AddProduct = ({ reloadMenu }: addProdProps) => {
 
   const closeForm = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
-      return dispatch(toggleProd());
+      return dispatch(toggleEditProd());
     }
   };
 
   return (
     <div
       className={
-        `bg-gray-900 bg-opacity-80 flex xs:text-sm md:text-base content-center items-center justify-center fixed w-full h-full z-30 backdrop-blur-sm transition-opacity duration-500 ${
+        `bg-gray-900 bg-opacity-80 xs:text-sm md:text-base flex content-center items-center justify-center fixed w-full h-full z-30 backdrop-blur-sm transition-opacity duration-500 ${
           initiate && ' opacity-100 '
         }` + `${!initiate && ' opacity-0'}`
       }
@@ -172,11 +178,11 @@ const AddProduct = ({ reloadMenu }: addProdProps) => {
         }
       >
         <div className='flex justify-between'>
-          <h1 className='text-lg mb-4 text-'>Add New Product</h1>
+          <h1 className='text-lg mb-4 text-'>Edit Product</h1>
           <AiOutlineCloseCircle
             className='cursor-pointer hover:text-red-500'
             size={26}
-            onClick={() => dispatch(toggleProd())}
+            onClick={() => dispatch(toggleEditProd())}
           />
         </div>
 
@@ -195,8 +201,7 @@ const AddProduct = ({ reloadMenu }: addProdProps) => {
           <div className='flex w-full'>
             <div className='mb-3 w-full'>
               <select
-                defaultValue={0}
-                ref={selectRef}
+                defaultValue={data.category_id}
                 className='form-select appearance-none block w-full px-3 py-1.5 text-base font-normal text-gray-700bg-white bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-in-out -m-0focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none hover:cursor-pointer'
                 onChange={(e) =>
                   setFormData({ ...formData, category_id: e.target.value })
@@ -246,14 +251,14 @@ const AddProduct = ({ reloadMenu }: addProdProps) => {
         </div>
 
         <div className='mb-3'>
+          Update Image
           <input
-            className=' block w-full text-sm border rounded-lg cursor-pointer text-gray-400 focus:outline-none bg-gray-700 border-gray-600 file:bg-gray-600 file:border-0 file:cursor-pointer file:text-white file:p-2 file:rounded-tl-lg file:rounded-bl-md file:px-4'
+            className='mt-2 block w-full text-sm border rounded-lg cursor-pointer text-gray-400 focus:outline-none bg-gray-700 border-gray-600 file:bg-gray-600 file:border-0 file:cursor-pointer file:text-white file:p-2 file:rounded-tl-lg file:rounded-bl-md file:px-4'
             type='file'
             onChange={handleUpload}
             accept={'image/*'}
-            ref={fileRef}
+            placeholder='hello'
           />
-
           <p className='mt-1 text-sm text-gray-900'>
             SVG, PNG, JPG or GIF (MAX. 600x400px).
           </p>
@@ -262,14 +267,14 @@ const AddProduct = ({ reloadMenu }: addProdProps) => {
         {newError && <ErrorComponent message={errorMsg} />}
         {newSuccess.length > 1 && <SuccessComponent message={newSuccess} />}
         <button
-          className='bg-indigo-500 text-white p-3 mt-5 px-5 rounded-lg hover:bg-indigo-800 float-right disabled:bg-gray-500'
+          className='bg-indigo-600 text-white p-3 rounded-lg px-5 mt-5 hover:bg-indigo-800 float-right'
           disabled={uploading}
         >
-          AddProduct
+          Save
         </button>
       </form>
     </div>
   );
 };
 
-export default AddProduct;
+export default EditProduct;

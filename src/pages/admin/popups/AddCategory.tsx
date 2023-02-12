@@ -1,40 +1,18 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { useAppDispatch } from '../../../redux/hooks';
-import { toggleCategory, toggleProd } from '../../../redux/popUpSlice';
+import { toggleCategory } from '../../../redux/popUpSlice';
 import isEmpty from '../../../validator/is-empty';
 import ErrorComponent from '../../../components/common/Error';
 import SuccessComponent from '../../../components/common/Success';
-
-const categoryList = [
-  'Beef',
-  'Fish',
-  'Pasta',
-  'Chicken',
-  'Appetizer',
-  'Drinks',
-  'Pasta',
-  'Chicken',
-  'Appetizer',
-  'Drinks',
-  'Pasta',
-  'Chicken',
-  'Appetizer',
-  'Drinks',
-  'Pasta',
-  'Chicken',
-  'Appetizer',
-  'Drinks',
-  'Pasta',
-  'Chicken',
-  'Appetizer',
-  'Drinks',
-  'Pasta',
-  'Chicken',
-  'Appetizer',
-  'Drinks',
-];
+import { v4 as uuidv4 } from 'uuid';
+import AWS from 'aws-sdk';
+import { iCategory } from '../../../../constant/interface';
+import {
+  updateCredentials,
+  useDynamoCategories,
+} from '../../../hooks/useDynamoDBData';
 
 interface CategoryFormData {
   name: string;
@@ -44,45 +22,143 @@ const AddCategory = () => {
   const [formData, setFormData] = useState<CategoryFormData>({
     name: '',
   });
+  const { data, loading } = useDynamoCategories(
+    import.meta.env.VITE_AWS_CATEGORY_TABLE
+  );
 
-  const [newError, setNewError] = useState(false);
-  const [errorMsg, setNewErrorMsg] = useState('');
-  const [newSuccess, setNewSuccess] = useState(false);
+  const inputRef = useRef(null);
 
+  const [pageLoading, setPageLoading] = useState<boolean>(loading);
+  const [newError, setNewError] = useState<string | null>(null);
+  const [newSuccess, setNewSuccess] = useState('');
+  const enterRef = useRef<HTMLButtonElement>(null);
   const dispatch = useAppDispatch();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const [initiate, setInitiate] = useState(false);
 
-    if (isEmpty(formData.name)) console.log('formData', formData);
+  useEffect(() => {
+    const addClass = setTimeout(() => {
+      setInitiate(true);
+    }, 10);
 
-    const filtered = Object.entries(formData).filter(([key, value]) =>
-      isEmpty(value)
-    );
+    return () => {
+      clearTimeout(addClass);
+    };
+  }, [initiate]);
 
-    console.log('filtered', filtered);
-
+  const deleteCategory = async (
+    categoryId: any,
+    createDate: string,
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    e.preventDefault();
+    updateCredentials();
     try {
-      if (filtered.length !== 0) {
-        setNewErrorMsg('Category Name is required! Please try again');
-        setNewSuccess(false);
-        return setNewError(true);
-      }
-
-      categoryList.push(formData.name);
-      setNewError(false);
-      setNewSuccess(true);
+      const params = {
+        TableName: import.meta.env.VITE_AWS_CATEGORY_TABLE,
+        Key: {
+          id: categoryId,
+          createdAt: createDate,
+        },
+      };
+      const dynamodb = new AWS.DynamoDB.DocumentClient();
+      await dynamodb.delete(params).promise();
+      const index = await data.findIndex(
+        (item: any) => item.id === categoryId && item.createdAt === createDate
+      );
+      data.splice(index, 1);
       setFormData({ ...formData, name: '' });
-    } catch (err) {
-      console.log(err);
+      setNewError(null);
+      setNewSuccess('you have successfully deleted a category Item');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const createCategory = async (item: iCategory) => {
+    updateCredentials();
+    try {
+      const params = {
+        TableName: import.meta.env.VITE_AWS_CATEGORY_TABLE,
+        Item: item,
+      };
+      const dynamodb = new AWS.DynamoDB.DocumentClient();
+      await dynamodb.put(params).promise();
+
+      // categoryList.push(formData.name);
+
+      data.unshift(item);
+      setFormData({ ...formData, name: '' });
+      setNewSuccess('You have successfully added a new category');
+      // dispatch(addCategory({ formData }));
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+
+  const handleKeyDown = useCallback(
+    (event: any) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        if (enterRef.current != null) enterRef.current?.click();
+      }
+    },
+    [formData]
+  );
+
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFormData({ ...formData, name: e.target.value });
+    },
+    [formData]
+  );
+
+  const handleSubmit = useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+
+      const filtered = Object.entries(formData).filter(([key, value]) =>
+        isEmpty(value)
+      );
+
+      if (filtered.length !== 0) {
+        setNewError('Category Name is required! Please try again');
+        setNewSuccess('');
+      } else {
+        createCategory({
+          id: uuidv4(),
+          name: formData.name,
+          createdAt: new Date().toISOString(),
+        });
+
+        setFormData({ name: '' });
+      }
+    },
+    [formData]
+  );
+
+  const closeForm = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      return dispatch(toggleCategory());
     }
   };
 
   return (
-    <div className='bg-gray-900 bg-opacity-80 flex content-center items-center justify-center fixed w-full h-full z-10'>
+    <div
+      className={
+        `bg-gray-900 bg-opacity-80 flex content-center items-center justify-center fixed w-full h-full z-30 backdrop-blur-sm transition-opacity duration-500 ${
+          initiate && ' opacity-100 '
+        }` + `${!initiate && ' opacity-0'}`
+      }
+      onClick={closeForm}
+    >
       <form
         onSubmit={handleSubmit}
-        className='bg-white p-6 rounded-lg shadow-md min-w-[25%]'
+        className={
+          `bg-white p-6 rounded-lg shadow-md xs:min-w-[80%] md:min-w-[45%] transition-transform duration-500 ${
+            initiate && ' translate-y-0 '
+          }` + `${!initiate && ' -translate-y-10'}`
+        }
       >
         <div className='flex justify-between'>
           <h1 className='text-lg mb-4 text-'>Add New Category</h1>
@@ -98,46 +174,72 @@ const AddCategory = () => {
           <input
             className='border border-gray-400 p-2 rounded-lg w-full'
             type='text'
+            ref={inputRef}
             value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
           />
         </div>
-
-        <div className='mb-1'>
-          <label className='block text-gray-700 mb-2'>
-            Existing Categories
-          </label>
+        <label className='p-2 block text-gray-700 mb-0 text-lg font-bold text-center'>
+          Existing Categories
+        </label>
+        <div className='mb-3 border border-gray-800 overflow-auto h-80'>
           <div className='flex w-full'>
-            <div className='mb-3 w-full'>
-              <div className='h-full w-full'>
-                <select
-                  defaultValue={0}
-                  size={5}
-                  className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 min-h-60'
-                >
-                  <option value={0}>- Category List -</option>
-                  {categoryList.map((category: string, index: number) => (
-                    <option
-                      className='disabled: text-white'
-                      disabled
-                      key={index}
-                    >
-                      {category}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <div className='h-full w-full'>
+              {pageLoading ? (
+                <div>Loading...</div>
+              ) : (
+                <table className='w-full border-1 border-gray-200'>
+                  <thead className='sticky top-0 bg-white border h-12'>
+                    <tr className='text-sm font-medium text-gray-700 border border-gray-200 '>
+                      <td className='px-3 text-center border border-gray-200'>
+                        <span>Category Name</span>
+                      </td>
+                      <td className='px-3 text-center'>
+                        <span>Action</span>
+                      </td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.length > 0 &&
+                      data.map((category: iCategory, index: number) => (
+                        <tr className='border-b border-gray-200' key={index}>
+                          <td className='text-center backdrop:gap-x-4'>
+                            <span>{category.name}</span>
+                          </td>
+                          <td className='text-center'>
+                            <button
+                              className=' xs:text-xs md:text-sm p-2 m-3 hover:rounded-md hover:bg-red-800 bg-red-600 text-white rounded-lg'
+                              onClick={(e) => {
+                                deleteCategory(
+                                  category.id,
+                                  category.createdAt,
+                                  e
+                                );
+                              }}
+                            >
+                              <span>Delete</span>
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
         </div>
+        {newError?.length && <ErrorComponent message={newError} />}
+        {newSuccess.length > 1 && <SuccessComponent message={newSuccess} />}
 
-        {newError && <ErrorComponent message={errorMsg} />}
-        {newSuccess && (
-          <SuccessComponent message='You have successfully added new category' />
-        )}
-
-        <button className='bg-blue-550 text-white p-3 rounded-lg hover:bg-indigo-600 float-right mt-5'>
-          AddCategory
+        <button
+          className={
+            `bg-indigo-500 text-white p-3 rounded-lg px-5 hover:bg-indigo-800 float-right mt-5 ` +
+            `${pageLoading ? 'disabled' : ''} `
+          }
+          ref={enterRef}
+        >
+          Add Category
         </button>
       </form>
     </div>

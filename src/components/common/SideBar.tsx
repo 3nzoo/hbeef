@@ -9,6 +9,7 @@ import { IconType } from 'react-icons';
 import { AiFillCalendar } from 'react-icons/ai';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { toggleSideBar } from '../../redux/popUpSlice';
+import { logOut } from '../../redux/authSlice';
 
 interface iMenu {
   name: string;
@@ -29,15 +30,15 @@ function SideBar() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-
-  // const [open, setOpen] = useState(true && window.innerWidth > 640);
+  const user: any = useAppSelector((state) => state.auth.user);
 
   const handleToggle = () => {
     dispatch(toggleSideBar());
   };
 
   const handleLogout: React.MouseEventHandler<HTMLDivElement> = () => {
-    console.log('Logout now!');
+    dispatch(logOut({}));
+    localStorage.removeItem('jwtToken');
     navigate('/login');
   };
 
@@ -45,15 +46,21 @@ function SideBar() {
     <>
       <div
         className={`bg-blue-550 min-h-screen ${
-          open ? 'w-52' : 'w-20'
-        } duration-500 text-gray-100 px-4`}
+          open ? 'w-44' : 'w-20'
+        } duration-500 text-gray-100 px-4 z-10`}
       >
-        <div className='py-3 flex justify-end'>
-          <HiMenuAlt3
-            size={26}
-            className='cursor-pointer'
-            onClick={handleToggle}
-          />
+        <div className='py-3 flex justify-end mt-2'>
+          <div className='flex flex-row justify-around'>
+            <h1 className={`${open ? 'block' : 'hidden'} text-lg mr-5 `}>
+              Hi {user ? user.username : ''}
+            </h1>
+
+            <HiMenuAlt3
+              size={26}
+              className='cursor-pointer'
+              onClick={handleToggle}
+            />
+          </div>
         </div>
         <div className='mt-4 flex flex-col gap-4 relative '>
           {menus?.map((menu, i) => (
@@ -62,7 +69,7 @@ function SideBar() {
               key={i}
               className={` ${
                 menu?.margin && 'mt-5' && window.innerWidth > 640
-              } group flex items-center text-sm  gap-3.5 font-medium p-2 hover:bg-gray-800 rounded-md`}
+              } group flex items-center text-sm gap-3.5 font-medium p-2 hover:bg-gray-800 rounded-md z-0`}
             >
               <div
                 className={
@@ -96,7 +103,7 @@ function SideBar() {
               <h2
                 className={`${
                   open && 'hidden'
-                } absolute left-48 bg-white font-semibold whitespace-pre text-gray-900 rounded-md drop-shadow-lg px-0 py-0 w-0 overflow-hidden group-hover:px-2 group-hover:py-1 group-hover:left-16 group-hover:duration-300 group-hover:w-fit  `}
+                } absolute left-20 z-0 bg-white font-semibold whitespace-pre text-gray-900 rounded-md drop-shadow-lg px-0 py-0 w-0 overflow-hidden group-hover:px-2 group-hover:py-1 group-hover:left-16 group-hover:duration-300 group-hover:w-fit pointer-events-none`}
               >
                 {menu?.name}
               </h2>
@@ -124,6 +131,7 @@ function SideBar() {
               className={`${
                 open && 'hidden'
               } absolute left-48 bg-white font-semibold whitespace-pre text-gray-900 rounded-md drop-shadow-lg px-0 py-0 w-0 overflow-hidden group-hover:px-2 group-hover:py-1 group-hover:left-16 group-hover:duration-300 group-hover:w-fit  `}
+              onClick={handleLogout}
             >
               Logout
             </h2>

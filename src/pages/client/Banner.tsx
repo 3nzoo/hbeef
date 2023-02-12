@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import chef from '/images/Hannah.jpg';
-import about from '../../data/about.json';
+import about from '../../../data/about.json';
 
 type Props = {
   onClick: (e: React.MouseEvent<HTMLOrSVGElement>) => void;

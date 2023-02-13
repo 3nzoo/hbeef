@@ -366,7 +366,7 @@ const Settings = () => {
                                   e: React.MouseEvent<HTMLButtonElement>
                                 ) => handleSetDefault(e, item)}
                               >
-                                Set Default
+                                Default
                               </button>
                               <button
                                 className='p-2 m-2 hover:rounded-md hover:bg-red-800 bg-red-600 text-white rounded-lg'

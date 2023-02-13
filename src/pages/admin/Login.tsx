@@ -62,7 +62,7 @@ const Login: React.FC = () => {
 
   return (
     <div className='bg-yellow-350 flex flex-col content-center items-center justify-center fixed w-full h-full'>
-      <div>
+      <div className='cursor-pointer' onClick={() => navigate('/')}>
         <img src={logo} width='250px' alt='Logo' className='-mt-16' />
       </div>
       <form

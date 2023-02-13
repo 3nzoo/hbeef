@@ -162,7 +162,7 @@ const ChangePassword = () => {
         }
       >
         <div className='flex justify-between mb-6'>
-          <h1 className='text-lg text-'>Add New User</h1>
+          <h1 className='text-lg text-'>Change your password</h1>
           <AiOutlineCloseCircle
             className='cursor-pointer hover:text-red-500'
             size={26}

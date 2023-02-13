@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Products from './pages/admin/Products';
 
 import Login from './pages/admin/Login';
@@ -10,15 +10,41 @@ import { Provider } from 'react-redux';
 import adminStore from './redux/adminStore';
 
 import RequireAuth from './pages/admin/RequireAuth';
+import Reserve from './pages/client/Reserve';
+import NavBars from './pages/client/NavBars';
+import { Footer } from './pages/client/Footer';
+
+const client = ['/', '/Menu', '/Reservation', '/Contact', '/Cart'];
 
 function App() {
+  const location = useLocation();
+
+  console.log('curr', location);
+
   return (
-    <div className='App h-screen w-screen'>
+    <div
+      className={
+        `App w-screen ` + client.includes(location.pathname)
+          ? `h-auto`
+          : `h-screen`
+      }
+    >
+      {client.includes(location.pathname) ? (
+        <header>
+          <NavBars />
+        </header>
+      ) : (
+        ''
+      )}
       <Routes>
         <Route path='/' element={<Home />} />
+        <Route path='/reservation' element={<Reserve />} />
       </Routes>
+
+      {client.includes(location.pathname) ? <Footer /> : ''}
+
       <Provider store={adminStore}>
-        <div className='flex min-h-screen w-full '>
+        <>
           <Routes>
             <Route path='/login' element={<Login />} />
             {/* protected */}
@@ -29,7 +55,7 @@ function App() {
               <Route path='/admin/reservation' element={<Reservation />} />
             </Route>
           </Routes>
-        </div>
+        </>
       </Provider>
     </div>
   );

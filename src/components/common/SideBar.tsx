@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HiMenuAlt3 } from 'react-icons/hi';
 import { RiSettings4Line } from 'react-icons/ri';
 import { ImUsers } from 'react-icons/im';
@@ -31,6 +31,10 @@ function SideBar() {
   const navigate = useNavigate();
   const location = useLocation();
   const user: any = useAppSelector((state) => state.auth.user);
+
+  useEffect(() => {
+    document.body.style.backgroundImage = 'none';
+  }, []);
 
   const handleToggle = () => {
     dispatch(toggleSideBar());

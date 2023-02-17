@@ -27,6 +27,8 @@ import ModalBox from '../../components/common/ModalBox';
 
 //TODO layout for product list with delete and edit button
 //TODO create button for
+// TODO add aws chaching for images
+// TODO add useref for chaching and usememo
 // !! get sidebar open status to make the row wider
 
 const Products = () => {

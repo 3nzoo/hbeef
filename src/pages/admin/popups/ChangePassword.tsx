@@ -127,7 +127,7 @@ const ChangePassword = () => {
       setPageLoading(true);
 
       if (formData.password == '' || formData.previous == '') {
-        setNewError('Everything is required! Please try again');
+        setNewError('Everything is required! ');
         setNewSuccess('');
       } else {
         updateUser(formData);

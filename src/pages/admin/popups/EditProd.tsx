@@ -34,15 +34,7 @@ interface editProdProps {
 }
 
 const EditProduct = ({ currentData, reloadMenu }: editProdProps) => {
-  const [formData, setFormData] = useState<iFormData>({
-    id: currentData.id,
-    name: currentData.name,
-    description: currentData.description,
-    price: currentData.price,
-    img_Url: currentData.img_Url,
-    category_id: currentData.category_id,
-    createdAt: currentData.createdAt,
-  });
+  const [formData, setFormData] = useState(currentData);
 
   const [newError, setNewError] = useState(false);
   const [errorMsg, setNewErrorMsg] = useState('');

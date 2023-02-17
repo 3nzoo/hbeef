@@ -96,7 +96,7 @@ const AddReserve = ({ excludeDates, reloadMenu }: addReserveProps) => {
       event.preventDefault();
 
       if (formData.date == null || formData.description == '') {
-        setNewError('Everything is required! Please try again');
+        setNewError('Everything is required!');
         setNewSuccess('');
       } else {
         createReserve({

@@ -11,11 +11,11 @@ import AddContacts from './popups/AddContact';
 import { AiFillPhone } from 'react-icons/ai';
 import { getDataFromDynamo } from '../../hooks/useDynamoDBData';
 import { updateCredentials } from '../../hooks/useDynamoDBData';
-import 'react-toastify/dist/ReactToastify.css';
 import AWS from 'aws-sdk';
 import ConfirmPage from '../../components/common/Confirm';
 import ChangePassword from './popups/ChangePassword';
 import { Flip, toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const sns = new AWS.SNS({
   region: import.meta.env.VITE_AWS_REGION,

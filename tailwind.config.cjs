@@ -3,7 +3,7 @@ module.exports = {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     screens: {
-      xs: '320px',
+      xs: '220px',
       sm: '480px',
       md: '768px',
       lg: '976px',
@@ -13,8 +13,8 @@ module.exports = {
       xs: '0.75rem',
       sm: '0.875rem',
       base: '1rem',
-      lg: '1.125rem',
-      xl: '1.25rem',
+      lg: '1.225rem',
+      xl: '1.35rem',
       '2xl': '1.5rem',
       '3xl': '1.975rem',
       '4xl': '2.5rem',
@@ -26,6 +26,7 @@ module.exports = {
     },
     fontFamily: {
       dance: ['Dancing Script'],
+      merienda: ['Merienda'],
     },
     lineHeight: {
       14: '8rem',

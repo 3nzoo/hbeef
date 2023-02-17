@@ -10,10 +10,6 @@ import { fileParams, s3 } from '../../../aws/file';
 import AWS, { S3 } from 'aws-sdk';
 import { updateCredentials } from '../../../hooks/useDynamoDBData';
 
-//TODO add clickable menu on the list that will download and open the pdf file
-//TODO add the upload file to aws :done
-// TODO create a Table for menu file. fields will be id, name, url :done
-
 updateCredentials();
 
 interface UploadFormData {
@@ -38,6 +34,7 @@ const UploadMenu = () => {
   const dispatch = useAppDispatch();
   const [initiate, setInitiate] = useState(false);
 
+  //? GETPDF
   const getAllpdf = async () => {
     const params = {
       Bucket: import.meta.env.VITE_AWS_S3_BUCKET_NAME,
@@ -65,6 +62,7 @@ const UploadMenu = () => {
     fileRef.current.value = '';
   };
 
+  //?DOWNLOAD PDF HERE
   const downloadPdf = async (
     item: string,
     e: React.MouseEvent<HTMLButtonElement>
@@ -91,6 +89,7 @@ const UploadMenu = () => {
     }
   };
 
+  //? DELETE PDF
   const deletePdf = async (
     item: string,
     e: React.MouseEvent<HTMLButtonElement>
@@ -270,7 +269,7 @@ const UploadMenu = () => {
 
         <button
           disabled={loading}
-          className='bg-indigo-600 text-white p-3 rounded-lg hover:bg-indigo-800 float-right mt-5 px-5 disabled:bg-gray-600'
+          className='bg-indigo-600 text-white p-3 rounded-lg hover:bg-indigo-800 float-right mt-2 px-5 disabled:bg-gray-600'
         >
           Upload PDF
         </button>

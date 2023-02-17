@@ -122,7 +122,7 @@ const AddCategory = () => {
       );
 
       if (filtered.length !== 0) {
-        setNewError('Category Name is required! Please try again');
+        setNewError('Category Name is required!');
         setNewSuccess('');
       } else {
         createCategory({
@@ -234,7 +234,7 @@ const AddCategory = () => {
 
         <button
           className={
-            `bg-indigo-500 text-white p-3 rounded-lg px-5 hover:bg-indigo-800 float-right mt-5 ` +
+            `bg-indigo-500 text-white p-3 rounded-lg px-5 hover:bg-indigo-800 float-right mt-1 ` +
             `${pageLoading ? 'disabled' : ''} `
           }
           ref={enterRef}

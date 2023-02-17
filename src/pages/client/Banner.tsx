@@ -24,7 +24,7 @@ const Banner = (props: Props) => {
   return (
     <section
       className={
-        `flex justify-center mb-10 xs:-mt-40 md:mt-0 bg-white bg-opacity-60 mx-3 rounded-2xl max-w-[900px] z-30 backdrop-blur-sm transition-opacity duration-500 ${
+        `flex justify-center mb-10 xs:-mt-36 md:mt-0 bg-white bg-opacity-60 mx-3 rounded-2xl max-w-[900px] z-30 backdrop-blur-sm transition-opacity duration-500 ${
           initiate && ' opacity-100 '
         }` + `${!initiate && ' opacity-0'}`
       }
@@ -36,10 +36,10 @@ const Banner = (props: Props) => {
           }` + `${!initiate && ' -translate-y-10'}`
         }
       >
-        <div className='w-full p-2 flex justify-end'>
+        <div className='w-full p-2 flex justify-end absolute -right-5 -top-6'>
           <svg
             xmlns='http://www.w3.org/2000/svg'
-            className='hover:bg-blue-250 bg-indigo-200 p-1 hover:text-white rounded-full cursor-pointer h-6 w-6'
+            className='  p-1 rounded-full cursor-pointer h-7 w-7 bg-blue-250 hover:bg-red-700 text-white '
             fill='none'
             viewBox='0 0 24 24'
             stroke='currentColor'
@@ -53,11 +53,11 @@ const Banner = (props: Props) => {
             />
           </svg>
         </div>
-        <div className='md:w-3/12 w-full h-full self-start flex flex-wrap justify-center p-2 flex-col'>
+        <div className='md:w-3/12 w-full h-full self-start flex flex-wrap justify-center p-4 pb-0 flex-col'>
           <img
             src={chef}
             alt='Logo'
-            className='flex self-center chef mb-4 w-auto rounded-xl'
+            className='flex self-center chef mb-2 w-auto rounded-xl'
           />
           <div className='text-center'>
             <h3 className='text-blue-250 text-base'>Chef</h3>
@@ -66,7 +66,7 @@ const Banner = (props: Props) => {
             </h3>
           </div>
         </div>
-        <div className='flex flex-grow flex-wrap w-6/12 px-4 text-justify pb-2'>
+        <div className='flex flex-grow flex-wrap w-6/12 px-4 text-justify py-2'>
           {data.about.map((item, index) => (
             <p
               key={index}

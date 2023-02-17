@@ -149,3 +149,119 @@ LOGOUT
   setAuthToken(false);
   // Set current user to {} which will set isAuthenticated to false
   dispatch(setCurrentUser({}));
+
+
+
+
+
+
+
+
+
+
+ <div className='banner flex border-solid border-blue-250 border-8 p-6 rounded-2xl justify-evenly self-center flex-wrap content-center w-auto '>
+          <h1 className='text-red-250 sm:text-4xl text-xl'>
+            • Make Your Reservation •
+          </h1>
+          <div className='w-full flex content-center justify-center'>
+            <div className='form flex w-full flex-col p-4'>
+              <div className='flex flex-row flex-wrap justify-center'>
+                <div className='name p-2 flex-grow'>
+                  <input
+                    type='text'
+                    value='Name'
+                    name='clientName'
+                    className='flex flex-grow h-full w-full shadow appearance-none border rounded-lg py-2 px-3 text-white bg-black-250 leading-tight focus:outline-none focus:shadow-outline sm:text-lg'
+                    // onChange={(e) => {
+                    //   setName(e.target.value);
+                    // }}
+                  />
+                </div>
+                <div className='contact p-2 flex-grow'>
+                  <input
+                    type='text'
+                    value='Contact Number'
+                    name='contactNum'
+                    className='flex flex-grow h-full w-full shadow appearance-none border rounded-lg py-2 px-3 text-white bg-black-250 leading-tight focus:outline-none focus:shadow-outline sm:text-lg '
+                    // onChange={(e) => {
+                    //   setName(e.target.value);
+                    // }}
+                  />
+                </div>
+              </div>
+              <div className='flex flex-row flex-wrap justify-center'>
+                <div className='date p-2 flex-grow sm:w-4/12 w-12/12'>
+                  {/* <input
+                    className='flex-grow flex shadow appearance-none border py-2 px-3 w-full text-white bg-black-250 leading-tight focus:outline-none focus:shadow-outline rounded-lg sm:text-lg'
+                    type='date'
+                    name='schedule'
+                    value='Date'
+                  /> */}
+                  <DatePicker
+                    className='flex shadow  border py-2 px-3 w-full text-white bg-black-250 leading-tight focus:outline-none focus:shadow-outline rounded-lg sm:text-lg '
+                    selected={startDate}
+                    onChange={(dateNow: any) => {
+                      setStartDate(dateNow);
+                    }}
+                    // excludeDates={excludeDates}
+                    // inline
+                    placeholderText='Select a day to reserve'
+                  />
+                </div>
+                <div className='time p-2 flex-grow sm:w-3/12 w-4/12'>
+                  <select
+                    className='shadow text-center appearance-none w-full border bg-black-250 rounded-lg px-3 text-white py-2 sm:text-lg text-sm outline-none'
+                    value='Time'
+                    onChange={(e) => setSched(e.target.value)}
+                  >
+                    {selectOptions}
+                  </select>{' '}
+                </div>
+                <div className='pax p-2 flex-grow w-3/12'>
+                  <input
+                    type='text'
+                    value='Guests'
+                    name='paxNum'
+                    className='flex flex-grow h-full w-full shadow appearance-none border rounded-lg py-2 px-3 text-white bg-black-250 leading-tight focus:outline-none focus:shadow-outline sm:text-lg '
+                    // onChange={(e) => {
+                    //   setName(e.target.value);
+                    // }}
+                  />
+                </div>
+              </div>
+              <div className='flex flex-row flex-wrap justify-center'>
+                <div className='request p-2 flex-grow'>
+                  <textarea
+                    value='Request'
+                    name='request'
+                    className='request flex flex-grow h-full w-full shadow appearance-none border rounded-lg py-2 px-3 text-white bg-black-250 leading-tight focus:outline-none focus:shadow-outline sm:text-lg'
+                    // onChange={(e) => {
+                    //   setName(e.target.value);
+                    // }}
+                  />
+                </div>
+              </div>
+              <div className='flex flex-row flex-wrap justify-between'>
+                <div className='date sm:p-5 p-2 w-auto text-xs md:text-sm '>
+                  <p className='flex'>
+                    Restaurant Schedule:
+                    <span className='text-red-250 ml-2 text-left'>
+                      {' '}
+                      Monday - Thursday (11:00am - 8:00pm) <br /> Friday -
+                      Sunday (11:00am - 10:00pm)
+                    </span>
+                  </p>
+                </div>
+                <div className='time p-5 sm:w-screen md:w-auto sm:justify-end'>
+                  <button
+                    className='bg-blue-250 text-white font-semibold hover:bg-red-700 py-1 px-6 border-2 border-blue-250 hover:border-transparent rounded-full'
+                    // onClick={newReservation}
+                  >
+                    SEND
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+

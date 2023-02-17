@@ -262,7 +262,7 @@ const AddProduct = ({ reloadMenu }: addProdProps) => {
         {newError && <ErrorComponent message={errorMsg} />}
         {newSuccess.length > 1 && <SuccessComponent message={newSuccess} />}
         <button
-          className='bg-indigo-500 text-white p-3 mt-5 px-5 rounded-lg hover:bg-indigo-800 float-right disabled:bg-gray-500'
+          className='bg-indigo-500 text-white p-3 mt-2 px-5 rounded-lg hover:bg-indigo-800 float-right disabled:bg-gray-500'
           disabled={uploading}
         >
           AddProduct

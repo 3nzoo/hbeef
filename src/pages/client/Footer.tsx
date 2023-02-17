@@ -1,4 +1,9 @@
+import { useLocation } from 'react-router-dom';
+import fb from '../../assets/facebook-app-icon.svg';
+import ig from '../../assets/ig-instagram-icon.svg';
 export const Footer = () => {
+  const location = useLocation();
+
   const handleClick = () => {
     window.open(
       'https://www.facebook.com/hannahbsbeef',
@@ -15,15 +20,37 @@ export const Footer = () => {
           Hannah B's Beef
         </span>
       </button>
-      <div className='absolute right-8 z-10 top-0 xs:hidden md:block flex max-[20px] flex-wrap'>
-        Follow Us!
-        <button>
-          <span>Icon FB</span>
-        </button>
-        <button>
-          <span>Icon IG</span>
-        </button>
-      </div>
+      {location.pathname.toLowerCase() === '/menu' ? (
+        <></>
+      ) : (
+        <div className='absolute right-8 z-10 top-0 xs:hidden md:block flex flex-row max-w-[120px] text-center text-red-600 text-2xl flex-wrap'>
+          Follow Us!
+          <button
+            className='mr-3 mt-1 cursor-pointer z-40'
+            onClick={() => {
+              window.open(
+                'https://www.facebook.com/hcuisine',
+                '_blank',
+                'noreferrer'
+              );
+            }}
+          >
+            <img width={'40px'} src={fb} />
+          </button>
+          <button
+            className='cursor-pointer z-40'
+            onClick={() => {
+              window.open(
+                'https://www.instagram.com/hcuisine/',
+                '_blank',
+                'noreferrer'
+              );
+            }}
+          >
+            <img width={'40px'} src={ig} />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

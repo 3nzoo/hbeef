@@ -156,7 +156,7 @@ const AddUser = ({ reloadMenu }: addUserProps) => {
         formData.username == '' ||
         formData.role == ''
       ) {
-        setNewError('Everything is required! Please try again');
+        setNewError('Everything is required!');
         setNewSuccess('');
       } else {
         createUser({
@@ -275,7 +275,7 @@ const AddUser = ({ reloadMenu }: addUserProps) => {
         <div className='mb-3'>
           <button
             className={
-              `bg-indigo-500 text-white p-3 rounded-lg px-5 hover:bg-indigo-800 float-right mt-5 disabled:bg-gray-600 ` +
+              `bg-indigo-500 text-white p-3 rounded-lg px-5 hover:bg-indigo-800 float-right mt-2 disabled:bg-gray-600 ` +
               `${pageLoading ? 'disabled' : ''} `
             }
             disabled={pageLoading}

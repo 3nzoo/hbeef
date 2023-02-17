@@ -6,20 +6,31 @@ import Settings from './pages/admin/Settings';
 import Users from './pages/admin/Users';
 import Home from './pages/client/Home';
 import Reservation from './pages/admin/Reservation';
-import { Provider } from 'react-redux';
+import { Provider as AdminProvider } from 'react-redux';
+import { Provider as ClientProvider } from 'react-redux';
+import clientStore from './redux/clientStore';
 import adminStore from './redux/adminStore';
 
 import RequireAuth from './pages/admin/RequireAuth';
 import Reserve from './pages/client/Reserve';
 import NavBars from './pages/client/NavBars';
 import { Footer } from './pages/client/Footer';
+import Contact from './pages/client/Contact';
+import Cart from './pages/client/Cart';
+import PageNotFound from './pages/client/NotFound';
+import Menu from './pages/client/menu/Menu';
 
-const client = ['/', '/Menu', '/Reservation', '/Contact', '/Cart'];
+const client = ['/', '/menu', '/reservation', '/contact', '/cart'];
+const adm = [
+  '/admin',
+  '/admin/users',
+  '/admin/reservation',
+  '/admin/settings',
+  '/login',
+];
 
 function App() {
   const location = useLocation();
-
-  console.log('curr', location);
 
   return (
     <div
@@ -29,21 +40,34 @@ function App() {
           : `h-screen`
       }
     >
-      {client.includes(location.pathname) ? (
-        <header>
-          <NavBars />
-        </header>
-      ) : (
-        ''
-      )}
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/reservation' element={<Reserve />} />
-      </Routes>
+      <div>
+        <ClientProvider store={clientStore}>
+          {!adm.includes(location.pathname) ? (
+            <header>
+              <NavBars />
+            </header>
+          ) : (
+            ''
+          )}
+          <Routes>
+            <Route path='/' element={<Home />} />
+            <Route path='/reservation' element={<Reserve />} />
+            <Route path='/menu' element={<Menu />} />
+            <Route path='/contact' element={<Contact />} />
+            <Route path='/cart' element={<Cart />} />
 
-      {client.includes(location.pathname) ? <Footer /> : ''}
+            {!adm.includes(location.pathname) ? (
+              <Route path='*' element={<PageNotFound />} />
+            ) : (
+              ''
+            )}
+          </Routes>
 
-      <Provider store={adminStore}>
+          {client.includes(location.pathname.toLowerCase()) ? <Footer /> : ''}
+        </ClientProvider>
+      </div>
+
+      <AdminProvider store={adminStore}>
         <>
           <Routes>
             <Route path='/login' element={<Login />} />
@@ -56,7 +80,7 @@ function App() {
             </Route>
           </Routes>
         </>
-      </Provider>
+      </AdminProvider>
     </div>
   );
 }

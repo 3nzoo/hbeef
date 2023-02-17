@@ -25,3 +25,21 @@
 .lineout {
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
 }
+
+.request::placeholder {
+  color: white;
+}
+
+.request:-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: white;
+}
+
+.request::-ms-input-placeholder {
+  /* Microsoft Edge */
+  color: white;
+}
+
+.merienda-font {
+  font-family: ;
+}

@@ -2,92 +2,48 @@ import { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { getDataFromDynamo } from '../../hooks/useDynamoDBData';
-import { useClientAppSelector } from '../../redux/hooks';
+import { useClientAppDispatch, useClientAppSelector } from '../../redux/hooks';
 import AWS from 'aws-sdk';
 import { Flip, toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import SuccessPage from './RequestSent';
 import LoadingPage from '../../components/common/Loading';
-
-const d = new Date();
-const dayToday = d.getDay();
+import OrdersComplete from './OrdersComplete';
+import { useNavigate } from 'react-router-dom';
+import { clearCart } from '../../redux/cartSlice';
 
 const sns = new AWS.SNS({
   region: import.meta.env.VITE_AWS_REGION,
   apiVersion: '2010-03-31',
 });
 
-export const timeOptions = [
-  { disabled: true, label: 'Time', value: '' },
-  { label: '11:00 am', value: '11:00 am' },
-  { label: '12:00 nn', value: '12:00nn' },
-  { label: '1:00 pm', value: '1:00 pm' },
-  { label: '2:00 pm', value: '2:00 pm' },
-  { label: '3:00 pm', value: '3:00 pm' },
-  { label: '4:00 pm', value: '4:00 pm' },
-  { label: '5:00 pm', value: '5:00 pm' },
-  { label: '6:00 pm', value: '6:00 pm' },
-  { label: '7:00 pm', value: '7:00 pm' },
-];
-
-if (dayToday > 4) {
-  timeOptions.push(
-    { label: '8:00 pm', value: '8:00 pm' },
-    { label: '9:00 pm', value: '9:00 pm' },
-    { label: '10:00 pm', value: '10:00 pm' }
-  );
-}
-
-interface ReserveFormData {
+interface InputContactsFormData {
   name: string;
   number: string;
-  selectedDate: any;
-  time: string;
-  guests: string;
-  request: string;
+  extraNumber?: string;
+  email: string;
+  address: string;
 }
 
-const Reserve = () => {
+interface inputProps {
+  message: string;
+}
+
+const InputContacts = (message: inputProps) => {
   const [loading, setLoading] = useState(false);
-  const [rerender, setRerender] = useState(false);
-  const [excludeDates, setExcludeDates] = useState<any>([]);
   const [success, setSuccess] = useState(false);
-  const [formData, setFormData] = useState<ReserveFormData>({
+  const [formData, setFormData] = useState<InputContactsFormData>({
     name: '',
     number: '',
-    selectedDate: new Date(),
-    time: '',
-    guests: '',
-    request: '',
+    extraNumber: '',
+    email: '',
+    address: '',
   });
+  const navigate = useNavigate();
+  const dispatch = useClientAppDispatch();
+
   // const navIsOpen = useClientAppSelector((state) => state.toggle.navIsOpen);
   const navIsOpen = useClientAppSelector((state) => state.toggle.navIsOpen);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const new_data = await getDataFromDynamo(
-        import.meta.env.VITE_AWS_DATE_TABLE
-      );
-
-      if (new_data) {
-        // setExcludeDates({ ...excludeDates, new_data });
-        const result = new_data.map((item) => new Date(item.date));
-
-        if (result) setExcludeDates(result);
-
-        setRerender(false);
-      }
-    };
-
-    fetchData();
-  }, [rerender]);
-
-  const selectOptions = timeOptions.map((option) => (
-    <option key={option.label} value={option.value}>
-      {option.label}
-    </option>
-  ));
-
   const [initiate, setInitiate] = useState(false);
 
   useEffect(() => {
@@ -108,10 +64,11 @@ const Reserve = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { request, ...rest } = formData;
+
+    const { email, extraNumber, address, ...rest } = formData;
 
     if (Object.values(rest).some((value: any) => value.toString() === '')) {
-      return toast.error('All fields are required except the Request field.', {
+      return toast.error('Name and Contact number are required.', {
         position: 'top-center',
         autoClose: 5000,
         hideProgressBar: false,
@@ -124,14 +81,21 @@ const Reserve = () => {
       });
     }
 
-    setLoading(true);
-    const date = new Date(formData.selectedDate);
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const year = date.getFullYear();
+    const messageDetails = {
+      Na: formData.name,
+      Num: formData.number,
+      em: formData.email,
+      add: formData.address,
+      ext: formData.extraNumber,
+    };
 
+    setLoading(true);
     const params: any = {
-      Message: `\nN: ${formData.name},\nC: ${formData.number},\nD: ${month}-${day}-${year},\nG: ${formData.guests},\nT: ${formData.time},\nR: ${formData.request}`,
+      Message: `Order Details\n${JSON.stringify(messageDetails)
+        .replace(/"/g, '')
+        .replace(/,/g, '\n')
+        .replace(/{/g, '')
+        .replace(/}/g, '')} ${message.message}`,
       TopicArn: import.meta.env.VITE_TOPIC_ARN,
     };
 
@@ -155,13 +119,19 @@ const Reserve = () => {
         );
       } else {
         setLoading(false);
+        dispatch(clearCart());
         setSuccess(!success);
       }
     });
   };
 
+  const handleClose = () => {
+    setSuccess(!success);
+    navigate('/menu');
+  };
+
   if (success) {
-    return <SuccessPage isTypeof='reserve' onClick={handleClickClose} />;
+    return <OrdersComplete onClick={handleClose} />;
   }
 
   return !navIsOpen ? (
@@ -183,9 +153,10 @@ const Reserve = () => {
             `${!initiate && ' -translate-y-10'}`
           }
         >
-          <h1 className='text-red-250 xs:text-xl sm:text-2xl md:text-4xl'>
-            • Make Your Reservation •
+          <h1 className='text-red-250 xs:text-xl sm:text-2xl md:text-4xl mb-2'>
+            • Contact Information •
           </h1>
+          <p>Please fill up this form to complete your order.</p>
           <form
             className='w-auto pt-5 xs:px-4 md:px-6  flex gap-4 justify-center text-lg flex-wrap xs:max-w-[90%] md:max-w-[100%]'
             onSubmit={handleSubmit}
@@ -205,7 +176,21 @@ const Reserve = () => {
               />
               <input
                 className='appearance-none grow bg-black-250 rounded-lg text-white p-2 px-3 xs:w-full md:w-1/2 shadow leading-tight focus:outline-none focus:shadow-outline sm:text-lg placeholder-white'
-                type='number'
+                type='text'
+                value={formData.email}
+                placeholder='Email'
+                onChange={(e) => {
+                  setFormData({
+                    ...formData,
+                    email: e.target.value,
+                  });
+                }}
+              />
+            </div>
+            <div className='flex w-full justify-center xs:flex-wrap sm:flex-nowrap mb-1 gap-4 '>
+              <input
+                className='appearance-none grow bg-black-250 rounded-lg text-white p-2 px-3 xs:w-full md:w-1/2 shadow leading-tight focus:outline-none focus:shadow-outline sm:text-lg placeholder-white'
+                type='text'
                 value={formData.number}
                 maxLength={12}
                 minLength={8}
@@ -221,66 +206,35 @@ const Reserve = () => {
                     });
                 }}
               />
-            </div>
-            <div className='flex w-full justify-center xs:flex-wrap sm:flex-nowrap mb-1 gap-4 '>
-              <DatePicker
-                className='flex shadow border py-2 px-3 w-full text-white bg-black-250 leading-tight focus:outline-none focus:shadow-outline rounded-lg sm:text-lg min-w-[40%] '
-                selected={formData.selectedDate}
-                minDate={new Date()}
-                onChange={(dateNow: any) => {
-                  setFormData({
-                    ...formData,
-                    selectedDate: dateNow,
-                  });
-                }}
-                excludeDates={excludeDates}
-              />
-
-              <select
-                className='shadow  appearance-none w-full border bg-black-250 rounded-lg px-3 text-white py-2 sm:text-lg text-lg outline-none min-w-[30%]'
-                value={formData.time}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    time: e.target.value,
-                  })
-                }
-              >
-                {selectOptions}
-              </select>
               <input
-                className='appearance-none grow bg-black-250 rounded-lg text-white p-2 px-3 xs:w-full md:w-1/2 shadow leading-tight focus:outline-none focus:shadow-outline sm:text-lg min-w-[20%] placeholder-white'
-                type='number'
-                maxLength={3}
-                minLength={1}
-                value={formData.guests}
+                className='appearance-none grow bg-black-250 rounded-lg text-white p-2 px-3 xs:w-full md:w-1/2 shadow leading-tight focus:outline-none focus:shadow-outline sm:text-lg placeholder-white'
+                type='text'
+                value={formData.extraNumber}
+                maxLength={12}
+                minLength={8}
+                placeholder='Other number (optional)'
                 onChange={(e) => {
                   if (
                     !isNaN(Number(e.target.value)) &&
-                    Number(e.target.value) > 0 &&
-                    e.target.value.length < 4
-                  ) {
+                    e.target.value.length < 13
+                  )
                     setFormData({
                       ...formData,
-                      guests: e.target.value,
+                      extraNumber: e.target.value,
                     });
-                  }
                 }}
-                placeholder='Guest #'
               />
             </div>
-
-            <div className='flex w-full justify-center xs:flex-wrap sm:flex-nowrap mb-3 gap-4 '>
-              <textarea
-                value={formData.request}
-                name='request'
-                className='request flex flex-grow h-full w-full shadow appearance-none border rounded-lg py-2 px-3 text-white bg-black-250 leading-tight focus:outline-none focus:shadow-outline sm:text-lg placeholder-white::placeholder'
-                rows={4}
-                placeholder={'Request'}
+            <div className='flex w-full justify-center xs:flex-wrap sm:flex-nowrap mb-1 gap-4 '>
+              <input
+                className='appearance-none grow bg-black-250 rounded-lg text-white p-2 px-3 xs:w-full md:w-1/2 shadow leading-tight focus:outline-none focus:shadow-outline sm:text-lg placeholder-white'
+                type='text'
+                value={formData.address}
+                placeholder='Address'
                 onChange={(e) => {
                   setFormData({
                     ...formData,
-                    request: e.target.value,
+                    address: e.target.value,
                   });
                 }}
               />
@@ -290,7 +244,7 @@ const Reserve = () => {
                 className='bg-blue-250 text-white font-semibold hover:bg-red-700 py-1 px-6 border-2 border-blue-250 hover:border-transparent rounded-full text-sm cursor-pointer disabled:bg-gray-700'
                 disabled={loading}
               >
-                SEND
+                Confirm Order
               </button>
             </div>
           </form>
@@ -303,4 +257,4 @@ const Reserve = () => {
   );
 };
 
-export default Reserve;
+export default InputContacts;

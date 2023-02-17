@@ -55,7 +55,7 @@ function SideBar() {
       >
         <div className='py-3 flex justify-end mt-2'>
           <div className='flex flex-row justify-around'>
-            <h1 className={`${open ? 'block' : 'hidden'} text-lg mr-5 `}>
+            <h1 className={`${open ? 'block' : 'hidden'} text-base mr-5 `}>
               Hi {user ? user.username : ''}
             </h1>
 

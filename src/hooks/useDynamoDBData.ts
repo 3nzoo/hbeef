@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import AWS from 'aws-sdk';
-import { iUser } from '../../constant/interface';
+// import { iUser } from '../constant/interface';
+import { config } from '../config';
 
 export const updateCredentials = () => {
   AWS.config.update({
-    region: import.meta.env.VITE_AWS_REGION,
-    accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
-    secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY,
+    region: config.aws_region,
+    accessKeyId: config.aws_key_id,
+    secretAccessKey: config.aws_secretAccessKey,
   });
 };
 
@@ -53,7 +54,7 @@ export const getDataFromDynamo = async (tableName: string) => {
 
   const result = await dynamodb.scan({ TableName: tableName }).promise();
 
-  if (tableName === import.meta.env.VITE_AWS_USER_TABLE) {
+  if (tableName === config.aws_menu) {
     const filteredData = result.Items?.sort((a, b) => {
       let dateA = new Date(a.createdAt).getTime();
       let dateB = new Date(b.createdAt).getTime();

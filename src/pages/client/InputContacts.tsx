@@ -11,9 +11,10 @@ import LoadingPage from '../../components/common/Loading';
 import OrdersComplete from './OrdersComplete';
 import { useNavigate } from 'react-router-dom';
 import { clearCart } from '../../redux/cartSlice';
+import { config } from '../../config';
 
 const sns = new AWS.SNS({
-  region: import.meta.env.VITE_AWS_REGION,
+  region: config.aws_region,
   apiVersion: '2010-03-31',
 });
 
@@ -96,7 +97,7 @@ const InputContacts = (message: inputProps) => {
         .replace(/,/g, '\n')
         .replace(/{/g, '')
         .replace(/}/g, '')} ${message.message}`,
-      TopicArn: import.meta.env.VITE_TOPIC_ARN,
+      TopicArn: config.aws_topicArn,
     };
 
     await sns.publish(params, (err, data) => {

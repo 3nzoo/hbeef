@@ -39,6 +39,7 @@ module.exports = {
         yellow: {
           250: '#FFF895',
           350: '#FFFCDF',
+          450: '#fcf7bd'
         },
         blue: {
           250: '#1B2FF0',

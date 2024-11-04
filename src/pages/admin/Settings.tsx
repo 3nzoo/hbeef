@@ -16,9 +16,10 @@ import ConfirmPage from '../../components/common/Confirm';
 import ChangePassword from './popups/ChangePassword';
 import { Flip, toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { config } from '../../config';
 
 const sns = new AWS.SNS({
-  region: import.meta.env.VITE_AWS_REGION,
+  region: config.aws_region,
   apiVersion: '2010-03-31',
 });
 
@@ -199,9 +200,7 @@ const Settings = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const new_data = await getDataFromDynamo(
-        import.meta.env.VITE_AWS_CONTACT_TABLE
-      );
+      const new_data = await getDataFromDynamo(config.aws_contactTable);
 
       if (new_data) {
         setDefaultNum(new_data.find((num) => num.isDefault === true));
@@ -240,13 +239,13 @@ const Settings = () => {
 
     updateCredentials();
     const dynamodb = new AWS.DynamoDB.DocumentClient({
-      region: import.meta.env.VITE_AWS_REGION,
+      region: config.aws_region,
     });
 
     const { contactnum } = data;
     await dynamodb
       .update({
-        TableName: import.meta.env.VITE_AWS_CONTACT_TABLE,
+        TableName: config.aws_contactTable,
         Key: { contactnum: contactnum },
         UpdateExpression: 'SET #isDefault = :isDefault',
         ExpressionAttributeNames: {
@@ -260,7 +259,7 @@ const Settings = () => {
 
     await dynamodb
       .update({
-        TableName: import.meta.env.VITE_AWS_CONTACT_TABLE,
+        TableName: config.aws_contactTable,
         Key: { contactnum: defcontactnum },
         UpdateExpression: 'SET #isDefault = :isDefault',
         ExpressionAttributeNames: {
@@ -344,7 +343,9 @@ const Settings = () => {
                 dataList.map((item: any, index: number) => {
                   return (
                     <tr
-                      className='hover:bg-gray-100 transition-colors group sm:text-sm md:text-lg'
+                      className={`${
+                        index % 2 === 0 ? 'bg-yellow-450' : 'bg-yellow-350'
+                      } hover:bg-yellow-250 transition-colors group sm:text-sm md:text-lg`}
                       key={index}
                     >
                       <td className='flex gap-x-4 items-center py-4 md:pl-5 xs:flex-col md:flex-row xs:pl-2'>

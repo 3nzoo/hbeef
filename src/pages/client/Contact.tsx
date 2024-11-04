@@ -9,10 +9,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import AWS from 'aws-sdk';
 import SuccessPage from './RequestSent';
 import LoadingPage from '../../components/common/Loading';
+import { config } from '../../config';
 
 import validator from 'validator';
 const sns = new AWS.SNS({
-  region: import.meta.env.VITE_AWS_REGION,
+  region: config.aws_region,
   apiVersion: '2010-03-31',
 });
 
@@ -44,7 +45,7 @@ const Contact = () => {
 
   useEffect(() => {
     const params = {
-      TableName: import.meta.env.VITE_AWS_CONTACT_TABLE,
+      TableName: config.aws_contactTable,
       FilterExpression: 'isDefault = :val',
       ExpressionAttributeValues: {
         ':val': true,
@@ -105,7 +106,7 @@ const Contact = () => {
     setLoading(true);
     const params: any = {
       Message: `\nS: ${formData.subject},\nN: ${formData.name},\nC: ${formData.number},\nE: ${formData.email},\nR: ${formData.request}`,
-      TopicArn: import.meta.env.VITE_TOPIC_ARN,
+      TopicArn: config.aws_topicArn,
     };
 
     await sns.publish(params, (err, data) => {
@@ -280,11 +281,17 @@ const Contact = () => {
                   </span>
                 </p>
                 <div className='w-full mt-2 flex justify-center'>
-                  <img
-                    src={hmap}
-                    width={'350px'}
-                    alt='64 Scout Rallos St. Tomas Morato'
-                  />
+                  <a
+                    href='https://maps.app.goo.gl/yURQomRg59a3qa9A8'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    <img
+                      src={hmap}
+                      width={'350px'}
+                      alt='64 Scout Rallos St. Tomas Morato'
+                    />
+                  </a>
                 </div>
               </div>
             </div>

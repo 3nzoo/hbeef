@@ -6,12 +6,13 @@ import { useAppDispatch } from '../../../redux/hooks';
 import { toggleAddUser } from '../../../redux/popUpSlice';
 import { v4 as uuidv4 } from 'uuid';
 import { updateCredentials } from '../../../hooks/useDynamoDBData';
-import { iUser } from '../../../../constant/interface';
+import { iUser } from '../../../constant/interface';
 
 import { BiCopy } from 'react-icons/bi';
 import AWS from 'aws-sdk';
 import bcrypt from 'bcryptjs';
 // import * as bcrypt from 'bcrypt';
+import { config } from '../../../config';
 
 const roles = ['staff', 'editor', 'assistant'];
 
@@ -59,7 +60,7 @@ const AddUser = ({ reloadMenu }: addUserProps) => {
 
   const getUser = async (username: string) => {
     const params = {
-      TableName: import.meta.env.VITE_AWS_USER_TABLE,
+      TableName: config.aws_userTable,
       Key: {
         username,
       },
@@ -93,7 +94,7 @@ const AddUser = ({ reloadMenu }: addUserProps) => {
       }
 
       const params = {
-        TableName: import.meta.env.VITE_AWS_USER_TABLE,
+        TableName: config.aws_userTable,
         Item: item,
       };
       const dynamodb = new AWS.DynamoDB.DocumentClient();

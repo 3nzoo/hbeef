@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useClientAppSelector } from '../../redux/hooks';
 import AWS from 'aws-sdk';
+import { config } from '../../config';
 
 interface OrderSuccess {
   onClick: (e: React.MouseEvent<HTMLOrSVGElement>) => void;
@@ -15,7 +16,7 @@ const OrdersComplete = (props: OrderSuccess) => {
 
   useEffect(() => {
     const params = {
-      TableName: import.meta.env.VITE_AWS_CONTACT_TABLE,
+      TableName: config.aws_contactTable,
       FilterExpression: 'isDefault = :val',
       ExpressionAttributeValues: {
         ':val': true,

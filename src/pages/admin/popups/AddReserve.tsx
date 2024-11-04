@@ -6,10 +6,10 @@ import { useAppDispatch } from '../../../redux/hooks';
 import { toggleReserve } from '../../../redux/popUpSlice';
 import { v4 as uuidv4 } from 'uuid';
 import { updateCredentials } from '../../../hooks/useDynamoDBData';
-import { iReserver } from '../../../../constant/interface';
-
+import { iReserver } from '../../../constant/interface';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { config } from '../../../config';
 
 import { BiCopy } from 'react-icons/bi';
 import AWS from 'aws-sdk';
@@ -57,7 +57,7 @@ const AddReserve = ({ excludeDates, reloadMenu }: addReserveProps) => {
     updateCredentials();
     try {
       const params = {
-        TableName: import.meta.env.VITE_AWS_DATE_TABLE,
+        TableName: config.aws_dateTable,
         Item: item,
       };
       const dynamodb = new AWS.DynamoDB.DocumentClient();

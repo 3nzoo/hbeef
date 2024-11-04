@@ -11,9 +11,10 @@ import { MdOutlineAddCircle } from 'react-icons/md';
 import { AiFillMinusCircle } from 'react-icons/ai';
 import AWS from 'aws-sdk';
 import InputContacts from './InputContacts';
+import { config } from '../../config';
 
 const sns = new AWS.SNS({
-  region: import.meta.env.VITE_AWS_REGION,
+  region: config.aws_region,
   apiVersion: '2010-03-31',
 });
 

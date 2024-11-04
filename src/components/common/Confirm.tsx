@@ -6,6 +6,7 @@ import AWS from 'aws-sdk';
 import { toggleConfirmDelete } from '../../redux/popUpSlice';
 import { updateCredentials } from '../../hooks/useDynamoDBData';
 // import { s3 } from '../../aws/file';
+import { config } from '../../config';
 
 interface deleteProdProps {
   currentData: any;
@@ -33,7 +34,7 @@ const ConfirmPage = ({ currentData, reloadMenu }: deleteProdProps) => {
 
     try {
       const params = {
-        TableName: import.meta.env.VITE_AWS_CONTACT_TABLE,
+        TableName: config.aws_contactTable,
         Key: {
           contactnum: currentData.contactnum,
         },
@@ -60,7 +61,7 @@ const ConfirmPage = ({ currentData, reloadMenu }: deleteProdProps) => {
 
     try {
       const params = {
-        TableName: import.meta.env.VITE_AWS_MENU_TABLE,
+        TableName: config.aws_menu,
         Key: {
           id: id,
           createdAt: createdAt,
@@ -75,7 +76,7 @@ const ConfirmPage = ({ currentData, reloadMenu }: deleteProdProps) => {
           const s3 = new AWS.S3({ apiVersion: '2021-08-06' });
 
           const params = {
-            Bucket: import.meta.env.VITE_AWS_S3_BUCKET_NAME,
+            Bucket: config.aws_bucket,
             Key: `menu/${currentData.img_Url}`,
           };
 

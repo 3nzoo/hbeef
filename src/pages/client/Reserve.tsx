@@ -8,12 +8,13 @@ import { Flip, toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import SuccessPage from './RequestSent';
 import LoadingPage from '../../components/common/Loading';
+import { config } from '../../config';
 
 const d = new Date();
 const dayToday = d.getDay();
 
 const sns = new AWS.SNS({
-  region: import.meta.env.VITE_AWS_REGION,
+  region: config.aws_region,
   apiVersion: '2010-03-31',
 });
 
@@ -65,9 +66,7 @@ const Reserve = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const new_data = await getDataFromDynamo(
-        import.meta.env.VITE_AWS_DATE_TABLE
-      );
+      const new_data = await getDataFromDynamo(config.aws_dateTable);
 
       if (new_data) {
         // setExcludeDates({ ...excludeDates, new_data });
@@ -132,7 +131,7 @@ const Reserve = () => {
 
     const params: any = {
       Message: `\nN: ${formData.name},\nC: ${formData.number},\nD: ${month}-${day}-${year},\nG: ${formData.guests},\nT: ${formData.time},\nR: ${formData.request}`,
-      TopicArn: import.meta.env.VITE_TOPIC_ARN,
+      TopicArn: config.aws_topicArn,
     };
 
     await sns.publish(params, (err, data) => {

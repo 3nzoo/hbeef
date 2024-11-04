@@ -9,6 +9,7 @@ import SuccessComponent from '../../../components/common/Success';
 import { fileParams, s3 } from '../../../aws/file';
 import AWS, { S3 } from 'aws-sdk';
 import { updateCredentials } from '../../../hooks/useDynamoDBData';
+import { config } from '../../../config';
 
 updateCredentials();
 
@@ -37,7 +38,7 @@ const UploadMenu = () => {
   //? GETPDF
   const getAllpdf = async () => {
     const params = {
-      Bucket: import.meta.env.VITE_AWS_S3_BUCKET_NAME,
+      Bucket: config.aws_bucket,
       Prefix: folderPath,
     };
 
@@ -73,7 +74,7 @@ const UploadMenu = () => {
     try {
       const s3 = new AWS.S3();
       const params = {
-        Bucket: import.meta.env.VITE_AWS_S3_BUCKET_NAME,
+        Bucket: config.aws_bucket,
         Key: `pdf/${item}`,
       };
       const data: any = await s3.getObject(params).promise();
@@ -100,7 +101,7 @@ const UploadMenu = () => {
     const ss3 = new AWS.S3({ apiVersion: '2021-08-06' });
 
     const params = {
-      Bucket: import.meta.env.VITE_AWS_S3_BUCKET_NAME,
+      Bucket: config.aws_bucket,
       Key: `pdf/${item}`,
     };
 

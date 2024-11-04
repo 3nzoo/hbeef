@@ -14,7 +14,7 @@ import {
 import AddCategory from './popups/AddCategory';
 import AddProduct from './popups/AddProd';
 import UploadMenu from './popups/UploadMenu';
-import { iCategory, iProduct } from '../../../constant/interface';
+import { iCategory, iProduct } from '../../constant/interface';
 // import { GoChevronLeft, GoChevronRight } from 'react-icons/go';
 import {
   getDataFromDynamo,
@@ -24,6 +24,7 @@ import {
 import EditProduct from './popups/EditProd';
 import ConfirmPage from '../../components/common/Confirm';
 import ModalBox from '../../components/common/ModalBox';
+import { config } from '../../config';
 
 //TODO layout for product list with delete and edit button
 //TODO create button for
@@ -32,9 +33,7 @@ import ModalBox from '../../components/common/ModalBox';
 // !! get sidebar open status to make the row wider
 
 const Products = () => {
-  const categoriesList = useDynamoCategories(
-    import.meta.env.VITE_AWS_CATEGORY_TABLE
-  );
+  const categoriesList = useDynamoCategories(config.aws_category);
 
   const editProdIsOpen = useAppSelector(
     (state) => state.toggling.editProdIsOpen
@@ -52,9 +51,7 @@ const Products = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const new_data = await getDataFromDynamo(
-        import.meta.env.VITE_AWS_MENU_TABLE
-      );
+      const new_data = await getDataFromDynamo(config.aws_menu);
 
       if (new_data) {
         setDataList(new_data);
@@ -178,24 +175,33 @@ const Products = () => {
             <thead>
               <tr className='text-sm md:text-lg font-medium text-gray-700 border-b border-gray-200'>
                 <td
-                  className='pl-5 cursor-pointer hover:bg-blue-550 hover:text-white'
+                  className='pl-5 cursor-pointer hover:bg-blue-550 hover:text-white group'
                   onClick={sortByProduct}
                 >
-                  <div className='flex items-center gap-x-4 text-center'>
+                  <div className='flex items-center gap-x-4 text-center relative'>
                     <span className='xs:mx-auto xs:my-0 md:mx-0'>Product</span>
+                    <div className='absolute left-1/4 -translate-x-1/2 bottom-full mb-2 hidden w-max bg-gray-800 text-white text-xs rounded px-2 py-2 group-hover:block'>
+                      Sort by Product
+                    </div>
                   </div>
                 </td>
                 <td
-                  className='py-4 px-2 text-center cursor-pointer hover:bg-blue-550 hover:text-white'
+                  className='py-4 px-2 text-center cursor-pointer hover:bg-blue-550 hover:text-white group relative'
                   onClick={sortByPrice}
                 >
                   Pricing
+                  <div className='absolute left-1/2 -translate-x-1/2 bottom-full hidden w-max bg-gray-800 text-white text-xs rounded px-2 py-2 group-hover:block'>
+                    Cheapest first
+                  </div>
                 </td>
                 <td
-                  className='py-4 px-2 text-center cursor-pointer hover:bg-blue-550 hover:text-white'
+                  className='py-4 px-2 text-center cursor-pointer hover:bg-blue-550 hover:text-white group relative'
                   onClick={sortByCategory}
                 >
                   Category
+                  <div className='absolute left-1/2 -translate-x-1/2 bottom-full hidden w-max bg-gray-800 text-white text-xs rounded px-2 py-1 group-hover:block'>
+                    Sort by Category
+                  </div>
                 </td>
                 <td className='py-4 px-2 text-center'>Actions</td>
               </tr>
@@ -215,7 +221,9 @@ const Products = () => {
                     if (imgUrl && currCategory) {
                       return (
                         <tr
-                          className='hover:bg-gray-100 transition-colors group sm:text-sm md:text-lg'
+                          className={`${
+                            index % 2 === 0 ? 'bg-yellow-450' : 'bg-yellow-350'
+                          } hover:bg-yellow-250 transition-colors group sm:text-sm md:text-lg`}
                           key={index}
                         >
                           <td className='flex gap-x-4 items-center py-4 md:pl-5 xs:flex-col md:flex-row xs:pl-2'>

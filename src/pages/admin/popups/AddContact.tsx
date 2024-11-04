@@ -7,6 +7,7 @@ import { toggleAddContact } from '../../../redux/popUpSlice';
 import { v4 as uuidv4 } from 'uuid';
 import { updateCredentials } from '../../../hooks/useDynamoDBData';
 import AWS from 'aws-sdk';
+import { config } from '../../../config';
 
 const roles = ['staff', 'editor', 'assistant'];
 
@@ -39,7 +40,7 @@ const AddContacts = ({ reloadMenu }: addContactsProps) => {
 
   const getContact = async (contactnum: string) => {
     const params = {
-      TableName: import.meta.env.VITE_AWS_CONTACT_TABLE,
+      TableName: config.aws_contactTable,
       Key: {
         contactnum,
       },
@@ -70,7 +71,7 @@ const AddContacts = ({ reloadMenu }: addContactsProps) => {
       }
 
       const params = {
-        TableName: import.meta.env.VITE_AWS_CONTACT_TABLE,
+        TableName: config.aws_contactTable,
         Item: item,
       };
 

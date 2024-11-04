@@ -5,6 +5,7 @@ import logo from '/images/logosmall.png';
 import { setCredentials } from '../../redux/authSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import axios from 'axios';
+import { config } from '../../config';
 
 interface FormData {
   username: string;
@@ -29,11 +30,11 @@ const Login: React.FC = () => {
   const location = useLocation();
   const currentUser = useAppSelector((state) => state.auth.user);
 
-  const currUrl = import.meta.env.VITE_API_URL;
+  const currUrl = config.aws_apiUrl;
 
   const keyis = {
     headers: {
-      'x-api-key': import.meta.env.VITE_HEADERS_KEY,
+      'x-api-key': config.aws_headers,
     },
   };
 

@@ -9,6 +9,7 @@ import { updateCredentials } from '../../../hooks/useDynamoDBData';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import AWS from 'aws-sdk';
 import bcrypt from 'bcryptjs';
+import { config } from '../../../config';
 
 const roles = ['staff', 'editor', 'assistant'];
 
@@ -47,7 +48,7 @@ const ChangePassword = () => {
 
   const getUser = async (username: string) => {
     const params = {
-      TableName: import.meta.env.VITE_AWS_USER_TABLE,
+      TableName: config.aws_userTable,
       Key: {
         username,
       },
@@ -100,12 +101,12 @@ const ChangePassword = () => {
 
     updateCredentials();
     const dynamodb = new AWS.DynamoDB.DocumentClient({
-      region: import.meta.env.VITE_AWS_REGION,
+      region: config.aws_region,
     });
 
     await dynamodb
       .update({
-        TableName: import.meta.env.VITE_AWS_USER_TABLE,
+        TableName: config.aws_userTable,
         Key: { username: user.username },
         UpdateExpression: 'SET #password = :password',
         ExpressionAttributeNames: {

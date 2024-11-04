@@ -17,4 +17,4 @@ export default adminStore;
 
 export type RootState = ReturnType<typeof adminStore.getState>;
 
-export type AppClientDispatchAppDispatch = typeof adminStore.dispatch;
+export type AppDispatch = typeof adminStore.dispatch;

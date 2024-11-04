@@ -6,6 +6,7 @@ import AWS from 'aws-sdk';
 import { toggleConfirmDelete } from '../../redux/popUpSlice';
 import { updateCredentials } from '../../hooks/useDynamoDBData';
 // import { s3 } from '../../aws/file';
+import { config } from '../../config';
 
 interface deleteProps {
   currentData: any;
@@ -17,11 +18,11 @@ const ConfirmDelete = ({ currentData, reloadMenu }: deleteProps) => {
   let currentTable = '';
 
   if (currentData.date) {
-    currentTable = import.meta.env.VITE_AWS_DATE_TABLE;
+    currentTable = config.aws_dateTable;
     displayData = currentData.description;
   } else if (currentData.username) {
     displayData = currentData.username;
-    currentTable = import.meta.env.VITE_AWS_USER_TABLE;
+    currentTable = config.aws_userTable;
   }
 
   const enterRef = useRef<HTMLButtonElement>(null);

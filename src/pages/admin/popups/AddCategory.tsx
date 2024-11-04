@@ -8,11 +8,12 @@ import ErrorComponent from '../../../components/common/Error';
 import SuccessComponent from '../../../components/common/Success';
 import { v4 as uuidv4 } from 'uuid';
 import AWS from 'aws-sdk';
-import { iCategory } from '../../../../constant/interface';
+import { iCategory } from '../../../constant/interface';
 import {
   updateCredentials,
   useDynamoCategories,
 } from '../../../hooks/useDynamoDBData';
+import { config } from '../../../config';
 
 interface CategoryFormData {
   name: string;
@@ -22,9 +23,7 @@ const AddCategory = () => {
   const [formData, setFormData] = useState<CategoryFormData>({
     name: '',
   });
-  const { data, loading } = useDynamoCategories(
-    import.meta.env.VITE_AWS_CATEGORY_TABLE
-  );
+  const { data, loading } = useDynamoCategories(config.aws_category);
 
   const inputRef = useRef(null);
 
@@ -55,7 +54,7 @@ const AddCategory = () => {
     updateCredentials();
     try {
       const params = {
-        TableName: import.meta.env.VITE_AWS_CATEGORY_TABLE,
+        TableName: config.aws_category,
         Key: {
           id: categoryId,
           createdAt: createDate,
@@ -79,7 +78,7 @@ const AddCategory = () => {
     updateCredentials();
     try {
       const params = {
-        TableName: import.meta.env.VITE_AWS_CATEGORY_TABLE,
+        TableName: config.aws_category,
         Item: item,
       };
       const dynamodb = new AWS.DynamoDB.DocumentClient();

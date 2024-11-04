@@ -10,9 +10,10 @@ import {
 } from '../../../hooks/useDynamoDBData';
 import AWS from 'aws-sdk';
 import { v4 as uuidv4 } from 'uuid';
-import { iCategory, iProduct } from '../../../../constant/interface';
+import { iCategory, iProduct } from '../../../constant/interface';
 import { fileParams, s3 } from '../../../aws/file';
 import SuccessComponent from '../../../components/common/Success';
+import { config } from '../../../config';
 
 //TODO - when a file is uploaded make a query to post in dynamo as well.
 //TODO - Make a post query to store data in dynamodb
@@ -42,7 +43,7 @@ const EditProduct = ({ currentData, reloadMenu }: editProdProps) => {
   const [uploading, setUploading] = useState(false);
   const [newSuccess, setNewSuccess] = useState('');
   const dispatch = useAppDispatch();
-  const { data } = useDynamoCategories(import.meta.env.VITE_AWS_CATEGORY_TABLE);
+  const { data } = useDynamoCategories(config.aws_category);
   const [initiate, setInitiate] = useState(false);
 
   useEffect(() => {
@@ -59,12 +60,12 @@ const EditProduct = ({ currentData, reloadMenu }: editProdProps) => {
     updateCredentials();
     try {
       const dynamodb = new AWS.DynamoDB.DocumentClient({
-        region: import.meta.env.VITE_AWS_REGION,
+        region: config.aws_region,
       });
       // await dynamodb.update(params).promise();
       await dynamodb
         .update({
-          TableName: import.meta.env.VITE_AWS_MENU_TABLE,
+          TableName: config.aws_menu,
           Key: { id: data.id, createdAt: data.createdAt },
           UpdateExpression:
             'SET #name = :name, #description = :description, #price = :price, #img_Url = :img_Url, #category_id = :category_id',

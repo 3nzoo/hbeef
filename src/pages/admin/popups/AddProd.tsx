@@ -10,9 +10,10 @@ import {
 } from '../../../hooks/useDynamoDBData';
 import AWS from 'aws-sdk';
 import { v4 as uuidv4 } from 'uuid';
-import { iCategory, iProduct } from '../../../../constant/interface';
+import { iCategory, iProduct } from '../../../constant/interface';
 import { fileParams, s3 } from '../../../aws/file';
 import SuccessComponent from '../../../components/common/Success';
+import { config } from '../../../config';
 
 //TODO - when a file is uploaded make a query to post in dynamo as well.
 //TODO - Make a post query to store data in dynamodb
@@ -69,7 +70,7 @@ const AddProduct = ({ reloadMenu }: addProdProps) => {
     };
     try {
       const params = {
-        TableName: import.meta.env.VITE_AWS_MENU_TABLE,
+        TableName: config.aws_menu,
         Item: newData,
       };
 
@@ -101,14 +102,12 @@ const AddProduct = ({ reloadMenu }: addProdProps) => {
     }
   };
 
-  const { data } = useDynamoCategories(import.meta.env.VITE_AWS_CATEGORY_TABLE);
+  const { data } = useDynamoCategories(config.aws_category);
 
   const dispatch = useAppDispatch();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    // console.log('form-', formData);
 
     try {
       if (Object.values(formData).some((value) => !value)) {

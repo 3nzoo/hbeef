@@ -208,7 +208,14 @@ function Item({ crtCount, value, isSelected, onClick }: ItemProps) {
             <div
               className={
                 `absolute -top-2 right-3 inline-flex items-center justify-center bg-red-500 rounded-full w-5 h-5 ` +
-                `${crtCount !== undefined && crtCount < 1 ? 'hidden' : 'block'}`
+                // `${crtCount !== undefined && crtCount < 1 ? 'hidden' : 'block'}`
+                `${
+                  crtCount !== undefined &&
+                  typeof crtCount === 'number' &&
+                  crtCount < 1
+                    ? 'hidden'
+                    : 'block'
+                }`
               }
             >
               <span className='text-xs font-bold text-white'>{crtCount}</span>
@@ -255,7 +262,9 @@ function MobileItem({ crtCount, isNowOpen, value, onClick }: ItemProps) {
           ? '• ' +
             value +
             ` ${
-              crtCount !== undefined && crtCount < 1
+              crtCount !== undefined &&
+              typeof crtCount === 'number' &&
+              crtCount < 1
                 ? '•'
                 : '{' + crtCount + '}' + '•'
             }`

@@ -11,6 +11,8 @@ import {
 import { getFileParams, s3 } from '../../../aws/file';
 import LoadingPage from '../../../components/common/Loading';
 import Food from './Food';
+import { config } from '../../../config';
+
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 updateCredentials();
@@ -38,7 +40,7 @@ const Menu = () => {
 
   const getAllpdf = async () => {
     const params = {
-      Bucket: import.meta.env.VITE_AWS_S3_BUCKET_NAME,
+      Bucket: config.aws_bucket,
       Prefix: 'pdf/',
     };
 
@@ -67,7 +69,7 @@ const Menu = () => {
     e.preventDefault();
     try {
       const params = {
-        Bucket: import.meta.env.VITE_AWS_S3_BUCKET_NAME,
+        Bucket: config.aws_bucket,
         Key: `pdf/${item}`,
       };
       const data: any = await s3.getObject(params).promise();
@@ -84,7 +86,7 @@ const Menu = () => {
   useEffect(() => {
     setLoading(true);
     const params = {
-      TableName: import.meta.env.VITE_AWS_MENU_TABLE,
+      TableName: config.aws_menu,
       FilterExpression: 'category_id = :val',
       ExpressionAttributeValues: {
         ':val': selectedCategory,
@@ -111,7 +113,7 @@ const Menu = () => {
     if (effectRan.current === true) {
       if (effectRan.current === true) {
         dynamoDB.scan(
-          { TableName: import.meta.env.VITE_AWS_CATEGORY_TABLE },
+          { TableName: config.aws_category },
           (err: any, data: any) => {
             if (err) {
               console.error('Error:', err);

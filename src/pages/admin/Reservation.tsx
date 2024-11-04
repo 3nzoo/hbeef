@@ -6,6 +6,7 @@ import { getDataFromDynamo } from '../../hooks/useDynamoDBData';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { toggleConfirmDelete, toggleReserve } from '../../redux/popUpSlice';
 import AddReserve from './popups/AddReserve';
+import { config } from '../../config';
 
 const Reservation = () => {
   const [dataList, setDataList] = useState<any>([]);
@@ -18,9 +19,7 @@ const Reservation = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const new_data = await getDataFromDynamo(
-        import.meta.env.VITE_AWS_DATE_TABLE
-      );
+      const new_data = await getDataFromDynamo(config.aws_dateTable);
 
       if (new_data) {
         // setExcludeDates({ ...excludeDates, new_data });
@@ -104,11 +103,14 @@ const Reservation = () => {
             <thead>
               <tr className='text-sm md:text-lg font-medium text-gray-700 border-b border-gray-200 '>
                 <td
-                  className='pl-5 cursor-pointer hover:bg-blue-550 hover:text-white'
+                  className='pl-5 cursor-pointer hover:bg-blue-550 hover:text-white group'
                   onClick={sortByName}
                 >
-                  <div className='flex items-center gap-x-4 text-center  '>
+                  <div className='flex items-center gap-x-4 text-center relative '>
                     <span className='xs:mx-auto xs:my-0 md:mx-0'>Date</span>
+                    <div className='absolute left-1/4 -translate-x-1/2 bottom-full mb-2 hidden w-max bg-gray-800 text-white text-xs rounded px-2 py-2 group-hover:block'>
+                      Sort by Date
+                    </div>
                   </div>
                 </td>
                 <td
@@ -127,7 +129,9 @@ const Reservation = () => {
                   const converted = new Date(item.date);
                   return (
                     <tr
-                      className='hover:bg-gray-100 transition-colors group sm:text-sm md:text-lg'
+                      className={`${
+                        index % 2 === 0 ? 'bg-yellow-450' : 'bg-yellow-350'
+                      } hover:bg-yellow-250 transition-colors group sm:text-sm md:text-lg`}
                       key={index}
                     >
                       <td className='flex gap-x-4 items-center py-4 md:pl-5 xs:flex-col md:flex-row xs:pl-2'>

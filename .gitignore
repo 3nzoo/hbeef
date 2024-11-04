@@ -13,6 +13,7 @@ lerna-debug.log*
 
 env
 env.local
+coverage
 node_modules
 dist
 dist-ssr
